@@ -165,7 +165,10 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 
-		questions[qno].Add(r.Form["answer"][0], user)
+		// Don't crash when the user skipped a question and left no answer.
+		if len(r.Form["answer"]) > 0 {
+			questions[qno].Add(r.Form["answer"][0], user)
+		}
 
 		if qno+1 < len(questions) {
 			http.Redirect(w, r, fmt.Sprint("/q/", qno+1), http.StatusFound)
