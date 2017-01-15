@@ -6,7 +6,7 @@
 </head>
 <body>
 	<form action="/q/{{.Qno}}" method="post">
-		Frage {{.Qno}}. {{.String}}<br>
+		<h3>Frage {{.Qno}}. {{.String}}</h3>
 
 		<input type="text" name="answer"><br>
 
