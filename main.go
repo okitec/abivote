@@ -40,6 +40,7 @@ func (v ByVotes) Less(i, j int) bool { return len(v[i].Voters) < len(v[j].Voters
 // XXX remove; not necessary anymore; has disintegrated into getters and setters
 type Question interface {
 	Qno() int
+	Qnoprev() int
 	String() string
 	Radio() bool
 	Choices() []Choice
@@ -56,6 +57,7 @@ type question struct {
 }
 
 func (q *question) Qno() int          { return q.no }
+func (q *question) Qnoprev() int      { if q.no > 1 { return q.no - 1 } else { return 1 } }
 func (q *question) String() string    { return q.text }
 func (q *question) Radio() bool       { return q.radio }
 func (q *question) Choices() []Choice { return q.choices }

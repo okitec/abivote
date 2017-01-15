@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Frage {{.Qno}} – Umfrage der CSG-Abizeitung 2017</title>
 	<style>
+		/* Radio buttons should be ordered in four columns. */
 		.radios {
 			-webkit-column-count: 4; /* Chrome, Safari, Opera */
 			-moz-column-count: 4;    /* Firefox */
@@ -21,7 +22,11 @@
 		{{end}}
 		</div>
 
-		<input type="submit" value="OK">
+		<input type="submit" value="Weiter">
+	</form>
+
+	<form action="/q/{{.Qnoprev}}" method="get" >
+		<button type="submit">Zurück</button>
 	</form>
 </body>
 </html>

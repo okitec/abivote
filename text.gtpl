@@ -10,7 +10,11 @@
 
 		<input type="text" name="answer"><br>
 
-		<input type="submit" value="OK">
+		<input type="submit" value="Weiter">
+	</form>
+
+	<form action="/q/{{.Qnoprev}}" method="get" >
+		<button type="submit">Zurück</button>
 	</form>
 </body>
 </html>
