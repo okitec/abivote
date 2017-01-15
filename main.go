@@ -173,7 +173,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 		if qno+1 < len(questions) {
 			http.Redirect(w, r, fmt.Sprint("/q/", qno+1), http.StatusFound)
 		} else {
-			fmt.Fprintln(w, "Danke für deine Teilnahme!")
+			fmt.Fprintln(w, "<p>Danke für deine Teilnahme! Nur Geduld, die Ergebnisse findest du dann in der der Abizeitung.</p>")
 		}
 	}
 }
