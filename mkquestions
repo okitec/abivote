@@ -1,0 +1,9 @@
+echo 'package main' >questions.go
+echo  >>questions.go
+echo 'var questions = []Question {' >>questions.go
+echo '	&question{0, "dummy", false, nil, nil},' >>questions.go
+
+9 awk -f mktq.awk <text-questions >>questions.go
+9 awk -f mkrq.awk <radio-questions >>questions.go
+
+echo '}' >>questions.go
