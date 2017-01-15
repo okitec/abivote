@@ -142,6 +142,10 @@ func qnoFromPath(path string) int {
 }
 
 func questionHandler(w http.ResponseWriter, r *http.Request) {
+	if !loggedIn {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+
 	qno := qnoFromPath(r.URL.Path)
 	if qno <= 0 || qno >= len(questions) {
 		http.NotFound(w, r)
