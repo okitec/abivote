@@ -5,9 +5,9 @@
 	<title>Frage {{.Qno}} – Umfrage der CSG-Abizeitung 2017</title>
 	<style>
 		.radios {
-			-webkit-column-count: 2; /* Chrome, Safari, Opera */
-			-moz-column-count: 2;    /* Firefox */
-			column-count: 2;
+			-webkit-column-count: 4; /* Chrome, Safari, Opera */
+			-moz-column-count: 4;    /* Firefox */
+			column-count: 4;
 		}
 	</style>
 </head>
