@@ -1,3 +1,6 @@
+/*
+Specialised Go HTTP server for taking surveys.
+*/
 package main
 
 import (
@@ -32,24 +35,24 @@ type ByVotes []Choice
 
 func (v ByVotes) Len() int           { return len(v) }
 func (v ByVotes) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
-func (v ByVotes) Less(i, j int) bool { return len(v[i].Voters) < len(v[j].Voters) } 
+func (v ByVotes) Less(i, j int) bool { return len(v[i].Voters) < len(v[j].Voters) }
 
 // XXX remove; not necessary anymore; has disintegrated into getters and setters
 type Question interface {
-	Qno()              int
-	String()           string
-	Radio()            bool
-	Choices()          []Choice
+	Qno() int
+	String() string
+	Radio() bool
+	Choices() []Choice
 	Add(answer, voter string)
 	Remove(voter string)
 }
 
 type question struct {
-	no      int
-	text    string
-	radio   bool
-	voters  []string
-	choices []Choice         // no predefined choices for text questions
+	no      int      // question number; URL path is '/q/no'
+	text    string   // question text
+	radio   bool     // is radio question?
+	voters  []string // ids of people who voted for this
+	choices []Choice // choices; no predefined choices for text questions
 }
 
 func (q *question) Qno() int          { return q.no }
@@ -57,6 +60,10 @@ func (q *question) String() string    { return q.text }
 func (q *question) Radio() bool       { return q.radio }
 func (q *question) Choices() []Choice { return q.choices }
 
+// Add the answer a voter chose. For text questions, this is the
+// text that was entered; for radio questions, this is the value
+// of the chosen radio button. That value is the full displayed
+// answer without spaces, punctuation and the like.
 func (q *question) Add(answer, voter string) {
 	// If a user answered a question once, they may change it; first remove
 	// the current answer, though.
@@ -82,6 +89,7 @@ func (q *question) Add(answer, voter string) {
 	}
 }
 
+// Remove the answer the voter has given.
 func (q *question) Remove(voter string) {
 	for i := range q.choices {
 		for j, v := range q.choices[i].Voters {
@@ -128,8 +136,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 // qnoFromPath: "/q/565" → 565, and so on.
 func qnoFromPath(path string) int {
-	a := strings.FieldsFunc(path, func(r rune) bool {return r == '/'})
-	qno, _ := strconv.Atoi(a[len(a)-1])  // get last segment, ignore error XXX
+	a := strings.FieldsFunc(path, func(r rune) bool { return r == '/' })
+	qno, _ := strconv.Atoi(a[len(a)-1]) // get last segment, ignore error XXX
 	return qno
 }
 
