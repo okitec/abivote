@@ -129,6 +129,10 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user := r.Form.Get("user")
+	if user == "" {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
 
 	qno := qnoFromPath(r.URL.Path)
 	if qno <= 0 || qno >= len(questions) {
