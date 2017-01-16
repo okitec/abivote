@@ -1,7 +1,7 @@
 Abivote
 =======
 
-*The Go template files (`.gtpl`) are localised in German.*
+*The Go template files (`.html`) are localised in German, as are other user-directed strings.*
 
 Abivote is a specialised Go HTTP server for taking surveys. It allows free-form questions
 where the user is expected to write an answer into a text field (*text questions*) and

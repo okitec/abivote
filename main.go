@@ -126,7 +126,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("login.gtpl")
+		t, _ := template.ParseFiles("login.html")
 		t.Execute(w, nil)
 	} else {
 		r.ParseForm()
@@ -158,9 +158,9 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 		var t *template.Template
 
 		if questions[qno].Radio() {
-			t, _ = template.ParseFiles("radio.gtpl")
+			t, _ = template.ParseFiles("radio.html")
 		} else {
-			t, _ = template.ParseFiles("text.gtpl")
+			t, _ = template.ParseFiles("text.html")
 		}
 
 		t.Execute(w, questions[qno])
@@ -194,7 +194,7 @@ func sortAndCalcPercentage(choices []Choice) {
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("stats.gtpl")
+	t, _ := template.ParseFiles("stats.html")
 
 	for i := range questions {
 		sortAndCalcPercentage(questions[i].Choices())
