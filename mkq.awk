@@ -25,7 +25,7 @@ $1 == "radio" {
 
 $1 == "text" {
 	text = catflds(2, NF)
-	printf("\t&question{%d, \"%s\", false, nil, nil, \"\"},\n", qno, $0)
+	printf("\t&question{%d, \"%s\", false, nil, nil, \"\"},\n", qno, text)
 	qno++
 }
 
