@@ -154,7 +154,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 		questions[qno].User = ""
 	} else {
 		// Don't complain when the user skipped a question and left no answer.
-		if len(r.Form["answer"]) > 0 {
+		if r.Form.Get("answer") != "" {
 			questions[qno].Add(r.Form["answer"][0], user)
 		}
 
