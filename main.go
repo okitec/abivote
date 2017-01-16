@@ -4,10 +4,14 @@ Specialised Go HTTP server for taking surveys.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"sort"
 	"strconv"
 	"strings"
@@ -46,7 +50,7 @@ type question struct {
 	User    string   // hack: current user that must be passed to template
 }
 
-func (q *question) String() string    { return q.text }
+func (q *question) String() string { return q.text }
 
 // Add the answer a voter chose. For text questions, this is the
 // text that was entered; for radio questions, this is the value
@@ -104,8 +108,17 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
+	http.Redirect(w, r, "/q/1?user="+user, http.StatusFound)
 }
+
+type userinfo struct {
+	Name     string
+	HasVoted bool
+	Admin    bool
+}
+
+// filled from "users.json" file
+var users map[string]userinfo
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -114,6 +127,17 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		user := r.PostForm.Get("username")
+
+		if _, ok := users[user]; !ok {
+			http.Error(w, "Diese Kennung ist nicht registriert", http.StatusForbidden) // XXX proper error
+			return
+		}
+
+		if users[user].HasVoted {
+			http.Error(w, "Du hast bereits gewählt", http.StatusForbidden) // XXX proper error
+			return
+		}
+
 		http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
 	}
 }
@@ -162,6 +186,12 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, fmt.Sprintf("/q/%d?user=%s", qno+1, user), http.StatusFound)
 		} else {
 			fmt.Fprintln(w, "<p>Danke für deine Teilnahme! Nur Geduld, die Ergebnisse findest du dann in der der Abizeitung.</p>")
+			// can't assign to struct in map because map store might change position
+			// invalid: users[user].HasVoted = true
+			u := users[user]
+			u.HasVoted = true
+			users[user] = u
+			saveUsers()
 		}
 	}
 }
@@ -180,6 +210,14 @@ func sortAndCalcPercentage(choices []Choice) {
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	user := r.Form.Get("user")
+	if _, ok := users[user]; !ok || !users[user].Admin {
+		http.Error(w, "Kein Zugang zu den Statistiken für Nicht-Admins", http.StatusForbidden) // XXX proper error
+			return
+	}
+
 	t, _ := template.ParseFiles("stats.html")
 
 	for i := range questions {
@@ -189,7 +227,37 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, questions[1:])
 }
 
+func saveUsers() {
+	b, err := json.Marshal(users)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	ioutil.WriteFile("users.json", b, 0644)
+}
+
 func main() {
+	b, err := ioutil.ReadFile("users.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = json.Unmarshal(b, &users)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer saveUsers()
+
+	// Also save users on SIGINT
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, os.Interrupt)
+	go func() {
+		for _ = range sc {
+			saveUsers()
+			os.Exit(0)
+		}
+	}()
+
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/q/", questionHandler)
