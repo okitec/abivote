@@ -1,7 +1,7 @@
 echo 'package main' >questions.go
 echo  >>questions.go
-echo 'var questions = []Question {' >>questions.go
-echo '	&question{0, "dummy", false, nil, nil},' >>questions.go
+echo 'var questions = []*question {' >>questions.go
+echo '	&question{0, "dummy", false, nil, nil, ""},' >>questions.go
 
 9 awk -f mkq.awk <questions >>questions.go
 

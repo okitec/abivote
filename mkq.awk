@@ -19,13 +19,13 @@ $1 == "radio" {
 	"awk -f mkchoices.awk " fname "" | getline choices
 
 	text = catflds(3, NF)
-	printf("\t&question{%d, \"%s\", true, nil, %s},\n", qno, text, choices)
+	printf("\t&question{%d, \"%s\", true, nil, %s, \"\"},\n", qno, text, choices)
 	qno++
 }
 
 $1 == "text" {
 	text = catflds(2, NF)
-	printf("\t&question{%d, \"%s\", false, nil, nil},\n", qno, $0)
+	printf("\t&question{%d, \"%s\", false, nil, nil, \"\"},\n", qno, $0)
 	qno++
 }
 

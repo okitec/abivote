@@ -37,30 +37,16 @@ func (v ByVotes) Len() int           { return len(v) }
 func (v ByVotes) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
 func (v ByVotes) Less(i, j int) bool { return len(v[i].Voters) < len(v[j].Voters) }
 
-// XXX remove; not necessary anymore; has disintegrated into getters and setters
-type Question interface {
-	Qno() int
-	Qnoprev() int
-	String() string
-	Radio() bool
-	Choices() []Choice
-	Add(answer, voter string)
-	Remove(voter string)
-}
-
 type question struct {
-	no      int      // question number; URL path is '/q/no'
+	Qno     int      // question number; URL path is '/q/no'
 	text    string   // question text
-	radio   bool     // is radio question?
+	Radio   bool     // is radio question?
 	voters  []string // ids of people who voted for this
-	choices []Choice // choices; no predefined choices for text questions
+	Choices []Choice // choices; no predefined choices for text questions
+	User    string   // hack: current user that must be passed to template
 }
 
-func (q *question) Qno() int          { return q.no }
-func (q *question) Qnoprev() int      { if q.no > 1 { return q.no - 1 } else { return 1 } }
 func (q *question) String() string    { return q.text }
-func (q *question) Radio() bool       { return q.radio }
-func (q *question) Choices() []Choice { return q.choices }
 
 // Add the answer a voter chose. For text questions, this is the
 // text that was entered; for radio questions, this is the value
@@ -75,32 +61,32 @@ func (q *question) Add(answer, voter string) {
 		}
 	}
 
-	for i, ch := range q.choices {
+	for i, ch := range q.Choices {
 		// The identifier answer, used as value in radio button decls, is the only
 		// one relevant here. The normal Answer is solely for display.
 		if ch.IdentAnswer() == answer {
 			q.voters = append(q.voters, voter)
-			q.choices[i].Voters = append(q.choices[i].Voters, voter)
+			q.Choices[i].Voters = append(q.Choices[i].Voters, voter)
 			return
 		}
 	}
 
-	if !q.radio {
+	if !q.Radio {
 		q.voters = append(q.voters, voter)
-		q.choices = append(q.choices, Choice{answer, []string{voter}, 0.0})
+		q.Choices = append(q.Choices, Choice{answer, []string{voter}, 0.0})
 	}
 }
 
 // Remove the answer the voter has given.
 func (q *question) Remove(voter string) {
-	for i := range q.choices {
-		for j, v := range q.choices[i].Voters {
+	for i := range q.Choices {
+		for j, v := range q.Choices[i].Voters {
 			if v == voter {
-				q.choices[i].Voters = append(q.choices[i].Voters[:j], q.choices[i].Voters[j+1:]...)
+				q.Choices[i].Voters = append(q.Choices[i].Voters[:j], q.Choices[i].Voters[j+1:]...)
 
 				// Remove text question choice entirely if none adhere to it.
-				if !q.radio && len(q.choices[i].Voters) == 0 {
-					q.choices = append(q.choices[:i], q.choices[i+1:]...)
+				if !q.Radio && len(q.Choices[i].Voters) == 0 {
+					q.Choices = append(q.Choices[:i], q.Choices[i+1:]...)
 				}
 
 				return
@@ -109,19 +95,16 @@ func (q *question) Remove(voter string) {
 	}
 }
 
-// XXX temp. for testing; implement sessions
-var user = "oki"
-var loggedIn = false
-
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	if !loggedIn {
+	user := r.Form.Get("user")
+	if user == "" {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
-	http.Redirect(w, r, "/q/1", http.StatusFound)
+	http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -130,9 +113,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	} else {
 		r.ParseForm()
-		user = r.Form["username"][0]
-		loggedIn = true
-		http.Redirect(w, r, "/", http.StatusFound)
+		user := r.PostForm.Get("username")
+		http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
 	}
 }
 
@@ -144,9 +126,9 @@ func qnoFromPath(path string) int {
 }
 
 func questionHandler(w http.ResponseWriter, r *http.Request) {
-	if !loggedIn {
-		http.Redirect(w, r, "/login", http.StatusFound)
-	}
+	r.ParseForm()
+
+	user := r.Form.Get("user")
 
 	qno := qnoFromPath(r.URL.Path)
 	if qno <= 0 || qno >= len(questions) {
@@ -157,23 +139,23 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		var t *template.Template
 
-		if questions[qno].Radio() {
+		if questions[qno].Radio {
 			t, _ = template.ParseFiles("radio.html")
 		} else {
 			t, _ = template.ParseFiles("text.html")
 		}
 
+		questions[qno].User = user
 		t.Execute(w, questions[qno])
+		questions[qno].User = ""
 	} else {
-		r.ParseForm()
-
-		// Don't crash when the user skipped a question and left no answer.
+		// Don't complain when the user skipped a question and left no answer.
 		if len(r.Form["answer"]) > 0 {
 			questions[qno].Add(r.Form["answer"][0], user)
 		}
 
 		if qno+1 < len(questions) {
-			http.Redirect(w, r, fmt.Sprint("/q/", qno+1), http.StatusFound)
+			http.Redirect(w, r, fmt.Sprintf("/q/%d?user=%s", qno+1, user), http.StatusFound)
 		} else {
 			fmt.Fprintln(w, "<p>Danke für deine Teilnahme! Nur Geduld, die Ergebnisse findest du dann in der der Abizeitung.</p>")
 		}
@@ -197,7 +179,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("stats.html")
 
 	for i := range questions {
-		sortAndCalcPercentage(questions[i].Choices())
+		sortAndCalcPercentage(questions[i].Choices)
 	}
 
 	t.Execute(w, questions[1:])
