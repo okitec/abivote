@@ -205,7 +205,11 @@ func sortAndCalcPercentage(choices []Choice) {
 	}
 
 	for i, ch := range choices {
-		choices[i].Percentage = 100.0 * float64(len(ch.Voters)) / float64(total)
+		if total > 0 {
+			choices[i].Percentage = 100.0 * float64(len(ch.Voters)) / float64(total)
+		} else {
+			choices[i].Percentage = 0.0
+		}
 	}
 }
 
@@ -237,6 +241,16 @@ func saveUsers() {
 	ioutil.WriteFile("users.json", b, 0644)
 }
 
+func saveResults() {
+	b, err := json.Marshal(questions)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	ioutil.WriteFile("results.json", b, 0644)
+}
+
 func main() {
 	b, err := ioutil.ReadFile("users.json")
 	if err != nil {
@@ -248,12 +262,23 @@ func main() {
 	}
 	defer saveUsers()
 
-	// Also save users on SIGINT
+	b, err = ioutil.ReadFile("results.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = json.Unmarshal(b, &questions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer saveResults()
+
+	// Also save users and resdults on SIGINT
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, os.Interrupt)
 	go func() {
 		for _ = range sc {
 			saveUsers()
+			saveResults()
 			os.Exit(0)
 		}
 	}()
