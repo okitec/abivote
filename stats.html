@@ -11,7 +11,7 @@
 		<h5>Frage {{.Qno}}. {{.String}}</h5>
 		<ol>
 			{{range .Choices}}
-			<li> {{len .Voters}} Stimmen ({{.Percentage}} %): {{.Answer}} </li>
+			{{if gt .Percentage 0.0}} <li> {{len .Voters}} Stimmen ({{.Percentage}} %): {{.Answer}} </li> {{end}}
 			{{end}}
 		</ol>
 	{{end}}
