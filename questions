@@ -1,5 +1,4 @@
 radio schüler Der Zuspätkomm-König
-radio schüler Das Traumpaar
 radio schüler Schnellchecker von der Firma Langsam
 radio schüler Lieblingsschüler der Lehrer
 radio schüler Größter Schleimer
@@ -88,12 +87,10 @@ radio lehrer Schimpft am meisten über das Kultusministerium
 radio lehrer Beste Figur
 radio lehrer Freak
 radio lehrer Nie krank
-radio lehrer Sehr oft krank
 radio lehrer Vom-Thema-Abweicher
 radio lehrer Filzstift-/ Kreidesparer
 radio lehrer Stilvollstes Auftreten
 radio lehrer Sprücheklopfer
-radio lehrer Alptraum der Schüler
 radio lehrer Unfairste Klausuren
 radio lehrer Pünktliche Beendung des Unterrichts
 radio lehrer Pausenverkürzer
@@ -127,3 +124,4 @@ radio days    Was ist dein Lieblingswochentag?
 radio year    Was war das coolste Schuljahr?
 text Wie lange vor deinem Seminarabgabetermin warst du fertig?
 text Was machst du nach dem Abi?
+text Das Traumpaar
