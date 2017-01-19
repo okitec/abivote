@@ -8,7 +8,7 @@ radio schüler Erster Vater/erste Mutter
 radio schüler Bester Vater/beste Mutter
 radio schüler Zukünftiger Politiker
 radio schüler Der/die Faulste
-radio schüler Fängt als erstes an zu Lernen
+radio schüler Fängt als erstes an zu lernen
 radio schüler Die nervigste Lache
 radio schüler Nie in der Schule
 radio schüler In 25 Jahren unverändert
@@ -16,7 +16,7 @@ radio schüler Ewiger „Hotel Mama“ Gast
 radio schüler Größter Alki
 radio schüler Wem würdest du nie dein Auto leihen?
 radio schüler Vielfraß
-radio schüler Geübteste Spicker
+radio schüler Geübtester Spicker
 radio schüler Mit den besten Ausreden
 radio schüler Lernt nie, bekommt aber gute Noten
 radio schüler Größter Streber
@@ -27,14 +27,15 @@ radio schüler Hausaufgabenverweigerer
 radio schüler Macht nie in Sport mit
 radio schüler Würde am ehesten was mit nem Lehrer anfangen
 radio schüler Größter Sportler
-radio schüler Der/die hilfsbereiteste
+radio schüler Der/die Hilfsbereiteste
 radio schüler Anpacker beim Organisieren
 radio schüler Mädchenschwarm/Jungsschwarm
 radio schüler Am meisten Holz vor der Hütte
 radio schüler Ewiger Single
+text Das Traumpaar
 radio schüler Unauffälligste(r)
-radio schüler Q-Gruppenspamer
-radio schüler Der mit-den-Lehrern-Diskutierer
+radio schüler Q-Gruppen-Spammer
+radio schüler Der Mit-den-Lehrern-Diskutierer
 radio schüler typischstes Mädchen/typischer Junge
 radio schüler Künftiger Harz-IV-Empfänger
 radio schüler Schaut beim Partner nur aufs Geld
@@ -72,10 +73,11 @@ radio lehrer Größter Filmvorführer
 radio lehrer Chilligste Unterrichtsführung
 radio lehrer Gefährlichster Unterricht
 radio lehrer Lustigster Unterricht
-radio lehrer Attraktivster Leherer
+radio lehrer Attraktivster Lehrer
 radio lehrer Attraktivste Lehrerin
+text Fiktives Lehrertraumpaar
 radio lehrer Größte Stimmungsschwankungen
-radio lehrer Q-Party Stammgäste
+radio lehrer Q-Party-Stammgäste
 radio lehrer Spicken leicht gemacht
 radio lehrer Interessantester Kleidungsstil
 radio lehrer Keine Hobbys
@@ -94,14 +96,13 @@ radio lehrer Sprücheklopfer
 radio lehrer Unfairste Klausuren
 radio lehrer Pünktliche Beendung des Unterrichts
 radio lehrer Pausenverkürzer
-radio lehrer Freundlichkeit in Person (Ironie)
+radio lehrer *hust* Freundlichkeit *hust* in Person
 radio lehrer Beste Abiturvorbereitung
 radio lehrer Schlechteste Abiturvorbereitung
 radio lehrer Spendabel
 radio lehrer Master of Hausaufgabendisaster
 radio lehrer Kompetent
 radio lehrer Weniger Kompetent
-radio lehrer Fiktives Lehrertraumpaar
 radio lehrer Ordnungsfanatiker
 radio lehrer Militärischer Unterricht
 radio lehrer Schüler-an-die-Tafel-Holer
@@ -124,4 +125,4 @@ radio days    Was ist dein Lieblingswochentag?
 radio year    Was war das coolste Schuljahr?
 text Wie lange vor deinem Seminarabgabetermin warst du fertig?
 text Was machst du nach dem Abi?
-text Das Traumpaar
+
