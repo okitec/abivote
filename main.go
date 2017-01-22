@@ -262,13 +262,13 @@ func main() {
 	}
 	defer saveUsers()
 
+	// Only try to decode if the file can be read.
 	b, err = ioutil.ReadFile("results.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = json.Unmarshal(b, &questions)
-	if err != nil {
-		log.Fatal(err)
+	if err == nil {
+		err = json.Unmarshal(b, &questions)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	defer saveResults()
 
