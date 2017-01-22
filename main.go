@@ -139,7 +139,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Printf("User %s logged in", user)
-		http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
+		http.Redirect(w, r, "/q/1?user="+user, http.StatusFound)
 	}
 }
 
@@ -183,6 +183,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 			questions[qno].Add(r.Form["answer"][0], user)
 		}
 
+		saveResults()
 		if qno+1 < len(questions) {
 			http.Redirect(w, r, fmt.Sprintf("/q/%d?user=%s", qno+1, user), http.StatusFound)
 		} else {
@@ -221,7 +222,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.Form.Get("user")
 	if _, ok := users[user]; !ok || !users[user].Admin {
 		http.Error(w, "Kein Zugang zu den Statistiken für Nicht-Admins", http.StatusForbidden) // XXX proper error
-			return
+		return
 	}
 
 	t, _ := template.ParseFiles("stats.html")
