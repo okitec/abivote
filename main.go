@@ -138,6 +138,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		log.Printf("User %s logged in", user)
 		http.Redirect(w, r, "/q/1?user=" + user, http.StatusFound)
 	}
 }
@@ -191,6 +192,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 			u := users[user]
 			u.HasVoted = true
 			users[user] = u
+			log.Printf("User %s completed the questionnaire", user)
 			saveUsers()
 		}
 	}
@@ -239,6 +241,7 @@ func saveUsers() {
 	}
 
 	ioutil.WriteFile("users.json", b, 0644)
+	log.Println("Saved users.json")
 }
 
 func saveResults() {
@@ -249,6 +252,7 @@ func saveResults() {
 	}
 
 	ioutil.WriteFile("results.json", b, 0644)
+	log.Println("Saved results.json")
 }
 
 func main() {
@@ -258,8 +262,9 @@ func main() {
 	}
 	err = json.Unmarshal(b, &users)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("users.json: ", err)
 	}
+	log.Printf("Loaded users.json. %d users", len(users))
 	defer saveUsers()
 
 	// Only try to decode if the file can be read.
@@ -269,10 +274,14 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		log.Println("Loaded results.json")
+	} else {
+		log.Println(err)
 	}
 	defer saveResults()
 
-	// Also save users and resdults on SIGINT
+	// Also save users and results on SIGINT
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, os.Interrupt)
 	go func() {
