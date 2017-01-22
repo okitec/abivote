@@ -199,7 +199,10 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func sortAndCalcPercentage(choices []Choice) {
+func sortAndCalcPercentage(choices []Choice) (orig []Choice) {
+	orig = make([]Choice, len(choices))
+	copy(orig, choices)
+
 	sort.Sort(sort.Reverse(ByVotes(choices)))
 
 	total := 0
@@ -214,6 +217,8 @@ func sortAndCalcPercentage(choices []Choice) {
 			choices[i].Percentage = 0.0
 		}
 	}
+
+	return
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
@@ -227,11 +232,20 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("stats.html")
 
+	// We store the original order of the choices before sorting them because
+	// the radios should not switch places lest the vote be biased. The common
+	// choices would be at the top, which is no good. This code is inefficient,
+	// but works,
+	var tmp [][]Choice
 	for i := range questions {
-		sortAndCalcPercentage(questions[i].Choices)
+		tmp = append(tmp, sortAndCalcPercentage(questions[i].Choices))
 	}
 
 	t.Execute(w, questions[1:])
+
+	for i := range questions {
+		questions[i].Choices = tmp[i]
+	}
 }
 
 func saveUsers() {
