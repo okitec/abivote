@@ -69,12 +69,12 @@ radio schüler Schönstes Auto
 radio schüler Wird Millionär
 radio schüler Turnbeutelvergesser
 radio schüler Inexistente Mitarbeit
-radio lehrer Größter Filmvorführer
+radio lehrer Nun zu den Lehrerfragen. Erstens: Größter Filmvorführer
 radio lehrer Chilligste Unterrichtsführung
 radio lehrer Gefährlichster Unterricht
 radio lehrer Lustigster Unterricht
-radio lehrer Attraktivster Lehrer
-radio lehrer Attraktivste Lehrerin
+radio lehrer Attraktivster (männlicher) Lehrer
+radio lehrer Attraktivste (weilbliche) Lehrerin
 text Fiktives Lehrertraumpaar
 radio lehrer Größte Stimmungsschwankungen
 radio lehrer Q-Party-Stammgäste
@@ -125,5 +125,5 @@ radio days    Was ist dein Lieblingswochentag?
 radio year    Was war das coolste Schuljahr?
 text Wie lange vor deinem Seminarabgabetermin warst du fertig?
 text Was machst du nach dem Abi?
-radio schüler Nun noch zwei vergessene Fragen. Erstens: Attraktivster Schüler
-radio schüler Attraktivste Schülerin
+radio schüler Nun noch zwei vergessene Fragen. Erstens: Attraktivster männlicher Schüler
+radio schüler Attraktivste weibliche Schülerin
