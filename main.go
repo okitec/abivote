@@ -127,20 +127,30 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		user := r.PostForm.Get("username")
-
-		if _, ok := users[user]; !ok {
-			http.Error(w, "Diese Kennung ist nicht registriert", http.StatusForbidden) // XXX proper error
-			return
-		}
-
-		if users[user].HasVoted {
-			http.Error(w, "Du hast bereits gewählt", http.StatusForbidden) // XXX proper error
+		if ok, err := CanVote(user); !ok {
+			http.Error(w, err, http.StatusForbidden) // XXX proper error
 			return
 		}
 
 		log.Printf("User %s logged in", user)
 		http.Redirect(w, r, "/q/1?user="+user, http.StatusFound)
 	}
+}
+
+func CanVote(user string) (ok bool, err string) {
+	if user == "" {
+		return false, "no name"
+	}
+
+	if _, ok := users[user]; !ok {
+		return false, "Diese Kennung ist nicht registriert"
+	}
+
+	if users[user].HasVoted {
+		return false, "Du hast bereits gewählt"
+	}
+
+	return true, ""
 }
 
 // qnoFromPath: "/q/565" → 565, and so on.
@@ -154,7 +164,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user := r.Form.Get("user")
-	if user == "" {
+	if ok, _ := CanVote(user); !ok {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
