@@ -125,4 +125,5 @@ radio days    Was ist dein Lieblingswochentag?
 radio year    Was war das coolste Schuljahr?
 text Wie lange vor deinem Seminarabgabetermin warst du fertig?
 text Was machst du nach dem Abi?
-
+radio schüler Nun noch zwei vergessene Fragen. Erstens: Attraktivster Schüler
+radio schüler Attraktivste Schülerin
