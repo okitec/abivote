@@ -160,6 +160,22 @@ func qnoFromPath(path string) int {
 	return qno
 }
 
+// Replica of questions, but the choices are never reordered.
+var pristineQuestions []*question;
+
+func init() {
+	for i, q := range questions {
+		q2 := &question{i, q.text, q.Radio, nil, nil, ""}
+
+		ch2 := make([]Choice, len(q.Choices))
+		copy(ch2, q.Choices)
+		q2.Choices = ch2
+
+		pristineQuestions = append(pristineQuestions, q2)
+		fmt.Println(q2)
+	}
+}
+
 func questionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
@@ -184,9 +200,9 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 			t, _ = template.ParseFiles("text.html")
 		}
 
-		questions[qno].User = user
-		t.Execute(w, questions[qno])
-		questions[qno].User = ""
+		pristineQuestions[qno].User = user
+		t.Execute(w, pristineQuestions[qno])
+		pristineQuestions[qno].User = ""
 	} else {
 		// Don't complain when the user skipped a question and left no answer.
 		if r.Form.Get("answer") != "" {
@@ -209,10 +225,7 @@ func questionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func sortAndCalcPercentage(choices []Choice) (orig []Choice) {
-	orig = make([]Choice, len(choices))
-	copy(orig, choices)
-
+func sortAndCalcPercentage(choices []Choice) {
 	sort.Sort(sort.Reverse(ByVotes(choices)))
 
 	total := 0
@@ -227,8 +240,6 @@ func sortAndCalcPercentage(choices []Choice) (orig []Choice) {
 			choices[i].Percentage = 0.0
 		}
 	}
-
-	return
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
@@ -242,20 +253,11 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("stats.html")
 
-	// We store the original order of the choices before sorting them because
-	// the radios should not switch places lest the vote be biased. The common
-	// choices would be at the top, which is no good. This code is inefficient,
-	// but works,
-	var tmp [][]Choice
 	for i := range questions {
-		tmp = append(tmp, sortAndCalcPercentage(questions[i].Choices))
+		sortAndCalcPercentage(questions[i].Choices)
 	}
 
 	t.Execute(w, questions[1:])
-
-	for i := range questions {
-		questions[i].Choices = tmp[i]
-	}
 }
 
 func saveUsers() {
